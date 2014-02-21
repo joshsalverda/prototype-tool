@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		
+		<style type="text/css">
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+			}
+			
+			#canvas {
+				width: 69%;
+				height: 100%;
+				border: 1px solid red;
+				float: left;
+			}
+			
+			/*#canvas * {
+				resize: both;
+			}*/
+			
+			#elements {
+				width: 30%;
+				height: 100%;
+				border: 1px solid green;
+				float: left;
+			}
+		</style>
+	</head>
+	<body>
+		<!--<canvas id="image"></canvas>
+		<script src="filters.js"></script>-->
+		
+		<div id="canvas">
+			
+		</div>
+		<div id="elements">
+			<div id="drag" draggable="true"><input></div>
+		</div>
+		
+		<script>
+			var canvas = document.getElementById('canvas')
+			canvas.ondragenter = function (event) { event.preventDefault(); };
+			canvas.ondragover = function (event) {
+				event.preventDefault(); // Necessary. Allows us to drop.
+				
+				event.dataTransfer.dropEffect = 'copy';
+				
+				//event.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
+				
+				//return false;
+			};
+			
+			canvas.ondrop = function (event) {
+				// this / e.target is current target element.
+				if (event.stopPropagation) {
+					event.stopPropagation(); // stops the browser from redirecting.
+				}
+				
+				console.log(event);
+				
+				console.log(event.dataTransfer.getData('text/plain'));
+				
+				//canvas.
+				
+				// See the section on the DataTransfer object.
+
+				return false;
+			}
+			
+			//canvas.contentEditable = 'true';
+			
+			var drag = document.getElementById('drag')
+			
+			drag.onclick = function() { return false; }
+			
+			drag.ondragstart = function (event) {
+				//event.dataTransfer.effectAllowed = 'move';
+				
+				console.log(this.innerHTML);
+				
+				event.dataTransfer.setData('text/plain', this.nodeName.toLowerCase())
+				
+				console.log(event);
+			};
+			
+			drag.ondragend = function (event) {
+				//console.log(event);
+				//console.log(event.dataTransfer.getData('text/plain'));//"text/uri-list").split("\n");
+				/*var newlink = document.createElement("a");
+			    newlink.href = link;
+			    newlink.textContent = link;
+			    event.target.appendChild(newlink);*/
+			  	//event.preventDefault();
+			};
+			
+			
+
+/*			function handleDragEnd(e) {
+				// this/e.target is the source node.
+
+				[].forEach.call(cols, function (col) {
+				col.classList.remove('over');
+				});
+			}*/
+		</script>
+	</body>
+</html>
