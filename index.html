@@ -11,39 +11,63 @@
 				margin: 0;
 			}
 			
-			#canvas {
+			#dropArea {
 				width: 69%;
 				height: 100%;
-				border: 1px solid red;
+				border-right: 1px solid #ccc;
 				float: left;
 			}
-			
-			/*#canvas * {
-				resize: both;
-			}*/
 			
 			#elements {
 				width: 30%;
 				height: 100%;
-				border: 1px solid green;
 				float: left;
+				margin-left: -10px;
+			}
+			
+			#elements > div {
+				display: inline-block;
+				margin: 0 10px;
+			}
+			
+			#elements > div * {
+				position: relative;
+				z-index: -1;
 			}
 		</style>
 	</head>
 	<body>
-		<!--<canvas id="image"></canvas>
-		<script src="filters.js"></script>-->
-		
-		<div id="canvas">
-			
-		</div>
+		<div id="dropArea"></div>
 		<div id="elements">
-			<div id="drag" draggable="true"><input></div>
+			<div><input></div>
+			<div><input type="radio"></div>
+			<div><a href="#">Link</a></div>
 		</div>
 		
 		<script>
-			var canvas = document.getElementById('canvas'),
-				drag = document.getElementById('drag');
+			var dropArea = document.getElementById('dropArea'),
+				elements = document.getElementById('elements').getElementsByTagName('div'),
+				offsetX = 0,
+				offsetY = 0,
+				debugMode = true;
+			
+			[].forEach.call(elements, function(element) {
+				element.draggable = true;
+				element.addEventListener('dragstart', onDragStart, false);
+				element.addEventListener('dragend', onDragEnd, false);
+			});
+			
+			function log() {
+				if(debugMode) {
+					console.log(arguments);
+				}
+			}
+			
+			function createElement(html) {
+				var temp = document.createElement('div');
+				temp.innerHTML = html;
+				return temp.childNodes[0];
+			}
 			
 			function preventDefault(event) {
 				event.preventDefault();
@@ -55,37 +79,38 @@
 			}
 			
 			function onDrop (event) {
-				if (event.stopPropagation) {
-					// stops browsers from redirecting.
-					event.stopPropagation();
-				}
+				log('Drop event fired', event)
 				
-				console.log(event);
-				console.log(event.dataTransfer.getData('text/plain'));
+				var node = event.dataTransfer.getData('text/html');
+				// strip out the prepended meta tag (needed for chrome)
+				node = node.replace(/<meta.*?>/, '');
+				var element = createElement(node);
 				
-				return false;
+				element.style.position = 'absolute';
+				element.style.left = event.clientX - offsetX + 'px';
+				element.style.top = event.clientY - offsetY + 'px';
+				
+				dropArea.appendChild(element);
 			}
 			
 			function onDragStart (event) {
-				//event.dataTransfer.effectAllowed = 'move';
+				log('DragStart event fired', event)
 				
-				console.log(this.innerHTML);
+				var element = this.childNodes[0];
+				offsetX = event.clientX - element.offsetLeft;
+				offsetY = event.clientY - element.offsetTop + 2; // i don't know why this is off by 2px
 				
-				event.dataTransfer.setData('text/plain', this.nodeName.toLowerCase())
-				
-				console.log(event);
+				event.dataTransfer.setData('text/html', this.innerHTML)
+				log('setData', this.innerHTML);
 			};
 			
 			function onDragEnd (event) {
-				
+				log('DragEnd event fired', event);
 			}
 			
-			canvas.addEventListener('dragenter', preventDefault, false);
-			canvas.addEventListener('dragover', onDragOver, false);
-			canvas.addEventListener('drop', onDrop, false);
-			
-			drag.addEventListener('dragstart', onDragStart, false);
-			drag.addEventListener('dragend', onDragEnd, false);
+			dropArea.addEventListener('dragenter', preventDefault, false);
+			dropArea.addEventListener('dragover', onDragOver, false);
+			dropArea.addEventListener('drop', onDrop, false);
 		</script>
 	</body>
 </html>
