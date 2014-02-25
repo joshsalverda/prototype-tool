@@ -42,42 +42,31 @@
 		</div>
 		
 		<script>
-			var canvas = document.getElementById('canvas')
-			canvas.ondragenter = function (event) { event.preventDefault(); };
-			canvas.ondragover = function (event) {
-				event.preventDefault(); // Necessary. Allows us to drop.
-				
-				event.dataTransfer.dropEffect = 'copy';
-				
-				//event.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
-				
-				//return false;
-			};
+			var canvas = document.getElementById('canvas'),
+				drag = document.getElementById('drag');
 			
-			canvas.ondrop = function (event) {
-				// this / e.target is current target element.
+			function preventDefault(event) {
+				event.preventDefault();
+			}
+			
+			function onDragOver (event) {
+				preventDefault(event);
+				event.dataTransfer.dropEffect = 'copy';
+			}
+			
+			function onDrop (event) {
 				if (event.stopPropagation) {
-					event.stopPropagation(); // stops the browser from redirecting.
+					// stops browsers from redirecting.
+					event.stopPropagation();
 				}
 				
 				console.log(event);
-				
 				console.log(event.dataTransfer.getData('text/plain'));
 				
-				//canvas.
-				
-				// See the section on the DataTransfer object.
-
 				return false;
 			}
 			
-			//canvas.contentEditable = 'true';
-			
-			var drag = document.getElementById('drag')
-			
-			drag.onclick = function() { return false; }
-			
-			drag.ondragstart = function (event) {
+			function onDragStart (event) {
 				//event.dataTransfer.effectAllowed = 'move';
 				
 				console.log(this.innerHTML);
@@ -87,25 +76,16 @@
 				console.log(event);
 			};
 			
-			drag.ondragend = function (event) {
-				//console.log(event);
-				//console.log(event.dataTransfer.getData('text/plain'));//"text/uri-list").split("\n");
-				/*var newlink = document.createElement("a");
-			    newlink.href = link;
-			    newlink.textContent = link;
-			    event.target.appendChild(newlink);*/
-			  	//event.preventDefault();
-			};
+			function onDragEnd (event) {
+				
+			}
 			
+			canvas.addEventListener('dragenter', preventDefault, false);
+			canvas.addEventListener('dragover', onDragOver, false);
+			canvas.addEventListener('drop', onDrop, false);
 			
-
-/*			function handleDragEnd(e) {
-				// this/e.target is the source node.
-
-				[].forEach.call(cols, function (col) {
-				col.classList.remove('over');
-				});
-			}*/
+			drag.addEventListener('dragstart', onDragStart, false);
+			drag.addEventListener('dragend', onDragEnd, false);
 		</script>
 	</body>
 </html>
